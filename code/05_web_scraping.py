@@ -63,7 +63,7 @@ for tag in results:
     print tag.text
 
 # limit search by Tag attribute
-b.find(name='p', attrs={'id':'scraping'})
+b.find(name='p', attrs={'id':'scraping'}).text
 b.find_all(name='p', attrs={'class':'topic'})
 b.find_all(attrs={'class':'topic'})
 
@@ -115,8 +115,9 @@ print b
 import codecs
 # write text from b.  Encode the text as 'utf8'
 # writing with the default of ASCII causes a write failure due to utf8 characters in b
-f = codecs.open(r'/Users/jim_byers/Documents/GA/GA_Data_Science_course/SEA-DAT1/data/Shawshank.html', "w", 'utf-8')
+f = codecs.open(r'Shawshank.html', "w", 'utf-8')
 f.write (b.prettify()) 
+f
 f.close()
 
 
@@ -128,7 +129,7 @@ f.close()
 # get the title
 b.find_all(name='span', attrs={'class':'itemprop', 'itemprop':'name'})    # too many results
 b.find(name='span', attrs={'class':'itemprop', 'itemprop':'name'}).text   # just get the first
-b.find(name='h1').find(name='span', attrs={'class':'itemprop', 'itemprop':'name'}).text   # limit the search
+b.find(name='h1').find(name='span', attrs={'id':'titleYear'}).text   # limit the search
 
 # get the star rating (as a float)
 float(b.find(name='span', attrs={'itemprop':'ratingValue'}).text)
@@ -139,13 +140,15 @@ EXERCISE TWO
 '''
 
 # get the description
-
+b.find(name='div',attrs={'class':'summary_text'}).text
 
 # get the content rating
-
+b.find(name='span',attrs={'itemprop':'contentRating'}).text
 
 # get the duration in minutes (as an integer)
+str(b.find(name='time',attrs={'itemprop':'duration'}).text)
 
+b.find_all('meta',attrs={'itemprop':'contentRating'})
 
 
 '''
@@ -173,15 +176,52 @@ Finally, convert that list into a DataFrame.
 
 # define a function that accepts an IMDb ID and returns a dictionary of movie information
 
+def get_movie_info (id):
+    from bs4 import BeautifulSoup
+    import requests
+    
+    #Import HTML info
+    r = requests.get('http://www.imdb.com/title/' + id + '/')    
+    
+    #Set Up Empty Diction for Results    
+    results = {}
+    
+    #Clean the HTML page
+    b = BeautifulSoup(r.text)
+    
+    #Find Title
+    results["title"] = b.find("h1","",itemprop="name").contents[0]
+
+    #Find Star Rating
+    results["star_rating"] = b.find_all("span",attrs={"itemprop":"ratingValue"})[0].text
+
+    #Find Description    
+    results["description"] = str(b.find("div",attrs={"class":"summary_text","itemprop":"description"}).text).replace("\n","").strip(" ")
+    
+    #Find Content Rating
+    results["content_rating"] = b.find("meta",attrs={"itemprop":"contentRating"})["content"]
+    
+    #Find Duration
+    time_text = b.find("time",attrs={"itemprop":"duration"}).text
+    minutes = int(time_text[time_text.find("h")-1])*60 + int(time_text[time_text.find("min")-2:time_text.find("min")])
+    results["duration"] = minutes
+    
+    return results
 
 # test the function
-
+get_movie_info('tt0111161')
 
 # open the file of IDs (one ID per row), and store the IDs in a list
+with open("imdb_ids.txt", 'rU') as f:
+    imdb = f.read()
 
+print imdb
 
+get_movie_info(imdb[0])
+imdb[1]
 # get the information for each movie, and store the results in a list
-
+for movie in imdb:
+    get_movie_info(movie)
 
 # check that the list of IDs and list of movies are the same length
 
