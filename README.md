@@ -1,6 +1,8 @@
+Hello World
+#This is Michael's REPO
 ##![](https://ga-dash.s3.amazonaws.com/production/assets/logo-9f88ae6c9c3871690e33280fcf557f33.png)  SEA-DAT2 course repository
 ###General Assembly Data Science course
-**Location:** Seattle, WA
+**Location:** **~~Seattle, WA~~** My House
 <br><b>Class times:</b> Classes: 6:30pm - 9:30pm</br>
 <b/>Instructor:</b> <a href="https://www.linkedin.com/profile/view?id=ADEAAAEai9UBI1CGmAPFMYpURJeL9zvxWX6xBqI">Jim Byers</a>
 
